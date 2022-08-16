@@ -14,7 +14,11 @@ fn main() {
 
     disp(&head);
 
-    head = head.pop_back().unwrap();
+    // head = head.pop_back().unwrap();
+
+    disp(&head);
+
+    head = head.pop_front().unwrap();
 
     disp(&head);
 }
