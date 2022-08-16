@@ -9,8 +9,16 @@ use list::List;
 // }
 
 fn main() {
-    let mut head = List::Empty;
-    head.push("yo");
-    
-    println!("Value in head is : {}", head.peek().unwrap());
+    let mut head = List::new("ye");
+    head = head.push("yo");
+
+    disp(&head);
+
+    // head = head.pop_back().unwrap();
+
+    disp(&head);
+
+    head = head.pop_front().unwrap();
+
+    disp(&head);
 }
