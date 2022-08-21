@@ -1,97 +1,87 @@
-use std::iter::{IntoIterator, Iterator};
+use std::{iter::{IntoIterator, Iterator}, fmt::Display};
 
-pub enum List<T> {
-    Empty,
-    Tail { data: T },
-    Node { data: T, next: Box<List<T>> },
+pub struct List<T>
+where
+    T: Copy
+{
+    head: Option<ListNode<T>>
+}
+
+type NextBox<T> = Box<ListNode<T>>;
+
+struct ListNode<T>
+where
+    T: Copy
+{
+    data: T,
+    next: Option<NextBox<T>>
+}
+
+impl<T> ListNode<T>
+where
+    T: Copy
+{
+    fn new(data: T, next: Option<ListNode<T>>) -> Self {
+        let mut next_node: Option<NextBox<T>> = None;
+        
+        if let Some(x) = next {
+            next_node = Some(Box::new(x));
+        }
+
+        ListNode { data: data, next: next_node }
+    }
 }
 
 impl<T> List<T>
 where
-    T: Copy,
+    T: Copy
 {
-    pub fn push(&mut self, new: T) {
-        match self {
-            List::Empty => *self = List::Tail { data: new },
-            List::Tail { data } => {
-                let next_box;
-                let new_node = List::Node {
-                    data: data,
-                    next: Box::new(List::Tail { data: new }),
-                };
-
-impl List {
-    pub fn get_msg(&self) -> &str {
-        return &self.msg;
-    }
-
-    pub fn new(msg: &str) -> List {
+    pub fn new() -> Self {
         List {
-            msg: msg.to_string(),
-            next: None
+            head: None
         }
     }
 
-    pub fn pop_front(self) -> Option<List> {
-        match self.next {
-            Some(x) => Some(*x),
+    pub fn peek(&self) -> Option<&T> {
+        match &self.head {
             None => None,
+            Some(x) => Some(&x.data)
         }
     }
 
-    // pub fn pop_back(self) -> Option<List> {
-    //     let mut head: Box<List>;
-    //     let mut previous: Option<Box<List>> = None;
-        
-    //     loop {
-    //         match &self.next {
-    //             Some(x) => {
-    //                 previous = Some(Box::new(self));
-    //                 head = *x;
-    //             },
-    //             None => break,
-    //         }
-    //     };
-
-    //     match previous {
-    //         None => None,
-    //         Some(x) => Some(*x)
-    //     }
-    // }
-
-    pub fn push(self, msg: &str) -> List {
-        let old_head = Box::new(self);
-        let output = List {
-            msg: msg.to_string(),
-            next: Some(old_head)
-        };
-
-        return output;
+    pub fn push_front(&mut self, val: T) {
+        self.head = match &self.head {
+            None => Some(ListNode::new(val, None)),
+            Some(x) => Some(ListNode::new(val, Some(*x)))
+        }
     }
 
-    // To implement :
-        // Iterator
-        // Pop Front
-        // Pop Back
-        // Find
+
+
+    // TO IMPLEMENT
+    //
+    // [X] new
+    // [X] peek
+    // [X] print_head
+    // [ ] push_front
+    // [ ] Iterator trait
+    // [ ] FromIterator trait
+    // [ ] push_back
+    // [ ] pop_front
+    // [ ] pop_back
 }
 
-// impl Iterator for ListIter {
-//     type Item = List;
+impl<T> List<T>
+where
+    T: Display,
+    T: Copy
+{
+    pub fn print_head(self) {
+        let head = self.peek();
 
-//     fn next(&mut self) -> Option<Self::Item> {
-//         match self.next {
-//             None => None,
-//             Some(x) => Some(x),
-//         }
-//     }
-// }
-
-// impl IntoIterator for List {
-//     type Item = List;
-//     type IntoIter = ListIter;
-
-//     fn into_iter(self) -> Self::IntoIter {
-//         return self;
-//     }
-// }
+        match head {
+            None => println!("print_head(): List is empty..."),
+            Some(x) => println!("{}", x)
+        }
+    }
+}

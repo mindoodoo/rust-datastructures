@@ -9,16 +9,13 @@ use list::List;
 // }
 
 fn main() {
-    let mut head = List::new("ye");
-    head = head.push("yo");
+    let mut head: List<i32> = List::new();
 
-    disp(&head);
+    head.print_head();
 
-    // head = head.pop_back().unwrap();
+    head.push_front(32);
 
-    disp(&head);
-
-    head = head.pop_front().unwrap();
-
-    disp(&head);
+    head.print_head();
 }
+
+// A -> X -> Y -> Z
