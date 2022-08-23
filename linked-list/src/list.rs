@@ -1,4 +1,4 @@
-use std::{iter::{IntoIterator, Iterator}, fmt::Display};
+use std::{iter::{IntoIterator, Iterator}, fmt::Display, rc::Rc};
 
 pub struct List<T>
 where
@@ -7,8 +7,9 @@ where
     head: Option<ListNode<T>>
 }
 
-type NextBox<T> = Box<ListNode<T>>;
+type NextBox<T> = Rc<ListNode<T>>;
 
+#[derive(Clone)]
 struct ListNode<T>
 where
     T: Copy
@@ -25,7 +26,7 @@ where
         let mut next_node: Option<NextBox<T>> = None;
         
         if let Some(x) = next {
-            next_node = Some(Box::new(x));
+            next_node = Some(Rc::new(x));
         }
 
         ListNode { data: data, next: next_node }
@@ -52,7 +53,7 @@ where
     pub fn push_front(&mut self, val: T) {
         self.head = match &self.head {
             None => Some(ListNode::new(val, None)),
-            Some(x) => Some(ListNode::new(val, Some(*x)))
+            Some(x) => Some(ListNode::new(val, Some(x.clone())))
         }
     }
 
@@ -63,7 +64,7 @@ where
     // [X] new
     // [X] peek
     // [X] print_head
-    // [ ] push_front
+    // [X] push_front
     // [ ] Iterator trait
     // [ ] FromIterator trait
     // [ ] push_back
@@ -76,7 +77,7 @@ where
     T: Display,
     T: Copy
 {
-    pub fn print_head(self) {
+    pub fn print_head(&self) {
         let head = self.peek();
 
         match head {
