@@ -1,13 +1,13 @@
 use std::{iter::{IntoIterator, Iterator}, fmt::Display, rc::Rc};
 
+type NextBox<T> = Rc<ListNode<T>>;
+
 pub struct List<T>
 where
     T: Copy
 {
-    head: Option<ListNode<T>>
+    head: Option<ListNode<T>>,
 }
-
-type NextBox<T> = Rc<ListNode<T>>;
 
 #[derive(Clone)]
 struct ListNode<T>
@@ -16,6 +16,13 @@ where
 {
     data: T,
     next: Option<NextBox<T>>
+}
+
+pub struct ListIterator<T>
+where
+    T: Copy
+{
+    current: Option<NextBox<T>>
 }
 
 impl<T> ListNode<T>
@@ -57,7 +64,12 @@ where
         }
     }
 
-
+    pub fn iter(&self) -> ListIterator<T> {
+        match &self.head {
+            None => ListIterator { current: None },
+            Some(x) => ListIterator { current: Some(Rc::new(x.clone())) }
+        }
+    }
 
     // TO IMPLEMENT
     //
@@ -70,6 +82,27 @@ where
     // [ ] push_back
     // [ ] pop_front
     // [ ] pop_back
+}
+
+impl<T> Iterator for ListIterator<T>
+where
+    T: Copy
+{
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let current = self.current.clone();
+
+        self.current = match &self.current {
+            None => None,
+            Some(x) => x.next.clone()
+        };
+
+        match current {
+            None => None,
+            Some(x) => Some(x.data)
+        }
+    }
 }
 
 impl<T> List<T>
