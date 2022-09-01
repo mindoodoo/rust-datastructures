@@ -6,7 +6,7 @@ pub struct List<T>
 where
     T: Copy
 {
-    head: Option<ListNode<T>>,
+    head: Option<Rc<ListNode<T>>>,
 }
 
 #[derive(Clone)]
@@ -29,11 +29,11 @@ impl<T> ListNode<T>
 where
     T: Copy
 {
-    fn new(data: T, next: Option<ListNode<T>>) -> Self {
+    fn new(data: T, next: Option<Rc<ListNode<T>>>) -> Self {
         let mut next_node: Option<NextBox<T>> = None;
         
         if let Some(x) = next {
-            next_node = Some(Rc::new(x));
+            next_node = Some(x.clone());
         }
 
         ListNode { data: data, next: next_node }
@@ -59,15 +59,21 @@ where
 
     pub fn push_front(&mut self, val: T) {
         self.head = match &self.head {
-            None => Some(ListNode::new(val, None)),
-            Some(x) => Some(ListNode::new(val, Some(x.clone())))
+            None => Some(Rc::new(ListNode::new(val, None))),
+            Some(x) => Some(Rc::new(ListNode::new(val, Some(x.clone()))))
         }
     }
 
+    pub fn push_back(&mut self, val: T) {
+
+    }
+
+    // Note : Rc::new() poses issue as if pop_front is called after iter() creation
+    // the pop_front change will not be reflected
     pub fn iter(&self) -> ListIterator<T> {
         match &self.head {
             None => ListIterator { current: None },
-            Some(x) => ListIterator { current: Some(Rc::new(x.clone())) }
+            Some(x) => ListIterator { current: Some(x.clone()) }
         }
     }
 
@@ -77,8 +83,7 @@ where
     // [X] peek
     // [X] print_head
     // [X] push_front
-    // [ ] Iterator trait
-    // [ ] FromIterator trait
+    // [X] Iterator trait
     // [ ] push_back
     // [ ] pop_front
     // [ ] pop_back
